@@ -1,6 +1,6 @@
 # Product-sales-SQL-analysis
 ## Project Over View
-The project aims to analyse the sales of sporting products, customer behaviour and product perfomance ranging from clothes, bikes, accessories etc. The analysis has been done using MySQL and the visualization using Power BI.
+The project aims to analyse the sales of sporting products, customer behaviour and product perfomance ranging from clothes, bikes, accessories etc. The analysis has been done using MySQL.
 ### Scope
 The data set has 60,398 rows.  The data set involves 3 tables: the fact_sales, dim-products and customers. 
 
