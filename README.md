@@ -30,6 +30,7 @@ where sales_amount is not null group by order_date order by order_date) as temp;
 #### 3.Year over year product performance analysis
 #### 4.Part of whole analysis
 - I analysed product performance relative to all products by revenue and quantity ordered for the different product categories and product lines.
+- I used left join inorder to connect the fact table to the products table and subqueries to get a combined table. The concat function helped in adding the percent symbol (%)
 - ##### by quantity ordered and category
 
 ```
@@ -85,6 +86,28 @@ else "Above 1000" end as cost_range
 from fact_sales f left join dim_products p on f.product_key=p.product_key where f.product_key is not null or f.product_key!='')
 select cost_range, count(product_name) as counts from temp 
 group by cost_range order by counts desc;
+
+```
+
+- #####  customer behaviour 
+
+```
+with temp as(select 
+f.order_number, f.product_key,f.order_date,f.sales_amount,f.quantity,
+c.customer_key,c.customer_number,c.customer_name,c.age,c.age_group
+from fact_sales f 
+left join customers c on f.customer_key=c.customer_key 
+where f.customer_key is not null or f.customer_key!='')
+
+select customer_number,customer_name,age, age_group,
+sum(quantity) as total_quantity,
+count(distinct order_number) as total_orders,
+sum(sales_amount) as total_sales,
+round(sum(sales_amount)/count(distinct order_number),0) as avg_order_amount,case
+when (timestampdiff(month,min(order_date), max(order_date)))>=12 and sum(sales_amount)>=5000 then "VIP"
+when (timestampdiff(month,min(order_date), max(order_date)))<12 and sum(sales_amount)>=5000 then "regular"
+else "new" end as customer_segment
+from temp where customer_number is not null group by customer_number, customer_name, age,age_group;
 
 ```
 
