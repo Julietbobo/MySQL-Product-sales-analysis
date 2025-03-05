@@ -27,3 +27,65 @@ from
 where sales_amount is not null group by order_date order by order_date) as temp;
 
 ```
+#### 3.Year over year product performance analysis
+#### 4.Part of whole analysis
+- I analysed product performance relative to all products by revenue and quantity ordered for the different product categories and product lines.
+- ##### by quantity ordered and category
+
+```
+select*, total_orders, concat(round((total_orders/sum(total_orders)over ())*100,2),"%") as percentage from
+(select p.category,sum(f.quantity) as total_orders
+from fact_sales f
+left join dim_products p on f.product_key=p.product_key 
+where f.quantity is not null or f.product_key is not null or f.product_key!=''
+group by p.category) as temp;
+
+```
+- ##### by quantity ordered and category and product line
+  
+```
+select category, product_line, counts from (
+select  category, product_line, count(category) over (partition by category,product_line) as counts from fact_sales f
+left join dim_products p on f.product_key=p.product_key ) as temp
+group by category, product_line;
+
+```
+- ##### revenue contribution by product category
+  
+```
+select*, concat(round((Revenue/sum(Revenue)over ())*100,2),"%") as percentage from
+(select p.category,sum(sales_amount) as revenue
+from fact_sales f
+left join dim_products p on f.product_key=p.product_key
+ where f.sales_amount is not null or f.product_key is not null or f.product_key!=''
+group by p.category) as temp;
+
+```
+
+- #####  revenue contribution by product line
+
+```
+select*, concat(round((Revenue/sum(Revenue)over ())*100,2),"%") as percentage from
+(select p.product_line,sum(sales_amount) as Revenue
+from fact_sales f
+left join dim_products p on f.product_key=p.product_key 
+where f.sales_amount is not null or f.product_key is not null or f.product_key!=''
+group by p.product_line) as temp;
+
+```
+
+- #####  data segmentation
+
+```
+with temp as (select f.product_key, p.product_name, p.cost,case
+when cost <100 then "Below 100"
+when cost between 100 and 500 then "100-500"
+when cost between 500 and 1000 then "500-1000"
+else "Above 1000" end as cost_range
+from fact_sales f left join dim_products p on f.product_key=p.product_key where f.product_key is not null or f.product_key!='')
+select cost_range, count(product_name) as counts from temp 
+group by cost_range order by counts desc;
+
+```
+
+
