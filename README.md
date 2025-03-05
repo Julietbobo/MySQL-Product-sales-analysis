@@ -13,18 +13,20 @@ The data runs from (?).  The data set involves 3 tables: the fact_sales, dim-pro
 #### 1.Change over time analysis
 I used date functions to extract the months and years to analyse change over time of the revenue, total customers and quantity ordered.
 ```
-select year(order_date) as years, monthname(order_date) as months, sum(sales_amount) as Revenue, count(distinct(customer_key)) Total_customers, sum(quantity) as quantity
-from fact_sales where sales_amount is not null group by years, months order by years;
+select year(order_date) as years, monthname(order_date) as months, sum(sales_amount) as revenue,
+count(distinct(customer_key)) total_customers, sum(quantity) as quantity
+from fact_sales
+where sales_amount is not null and order_date!='' group by years, months order by years;
 
 ```
 #### 2.Cumulative analysis
 In addition to date functions, I used a subquery and a window function to help me get the running total of the quantities, revenue and total customers which was partitioned by years.
 ```
-select *,  sum(Revenue)over( partition by year(order_date) order by order_date) as Running_Total_Revenue
+select *, year(order_date), sum(Revenue)over( partition by year(order_date) order by order_date) as Running_Total_Revenue
 from
-(select order_date,  sum(sales_amount) as Revenue, count(distinct(customer_key)) Total_customers,
+(select order_date, sum(sales_amount) as revenue, count(distinct(customer_key)) total_customers,
  sum(quantity) as quantity from fact_sales
-where sales_amount is not null group by order_date order by order_date) as temp;
+where sales_amount is not null and order_date!='' group by order_date order by order_date) as temp;
 
 ```
 #### 3.Part of whole analysis
