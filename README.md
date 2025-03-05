@@ -7,7 +7,6 @@ The data runs from (?).  The data set involves 3 tables: the fact_sales, dim-pro
 - I categorized the analysis in four groups
   - Change over time analysis
   - Cumulative analysis (running total)
-  - Year over year product perfomance
   - Part of whole analysis. This involves analysing product performance relative to all products
   - Customer behaviour analysis
 #### 1.Change over time analysis
@@ -27,8 +26,7 @@ from
 where sales_amount is not null group by order_date order by order_date) as temp;
 
 ```
-#### 3.Year over year product performance analysis
-#### 4.Part of whole analysis
+#### 3.Part of whole analysis
 - I analysed product performance relative to all products by revenue and quantity ordered for the different product categories and product lines.
 - I used left join inorder to connect the fact table to the products table and subqueries to get a combined table. The concat function helped in adding the percent symbol (%)
 - ##### by quantity ordered and category
@@ -74,9 +72,8 @@ where f.sales_amount is not null or f.product_key is not null or f.product_key!=
 group by p.product_line) as temp;
 
 ```
-
-- #####  data segmentation
-
+#####  4.data segmentation
+- I categorized the data based on the costs to see which ones were popular. I segmented them into below 100, 100-500, 500-1000 and above 1000. I used a case statement to help create the different categories and a CTE to create a table with the different categories incorporated from which I would be able to derive the total orders based on the cost.
 ```
 with temp as (select f.product_key, p.product_name, p.cost,case
 when cost <100 then "Below 100"
@@ -89,8 +86,9 @@ group by cost_range order by counts desc;
 
 ```
 
-- #####  customer behaviour 
-
+#####  5.customer behaviour 
+- I analyzed the customer behaviour in terms of quantity of products bought, how many orders they've made, total sales amount, the average value per order and what category
+  they fall into based on their total sales amount. I categorized the customers into regular, VIP and New using a case statement.
 ```
 with temp as(select 
 f.order_number, f.product_key,f.order_date,f.sales_amount,f.quantity,
