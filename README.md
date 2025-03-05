@@ -8,6 +8,7 @@ The data runs from (?).  The data set involves 3 tables: the fact_sales, dim-pro
   - Change over time analysis
   - Cumulative analysis (running total)
   - Part of whole analysis. This involves analysing product performance relative to all products
+  - Data segmentation
   - Customer behaviour analysis
 #### 1.Change over time analysis
 I used date functions to extract the months and years to analyse change over time of the revenue, total customers and quantity ordered.
@@ -16,7 +17,7 @@ select year(order_date) as years, monthname(order_date) as months, sum(sales_amo
 from fact_sales where sales_amount is not null group by years, months order by years;
 
 ```
-#### 2.Running total
+#### 2.Cumulative analysis
 In addition to date functions, I used a subquery and a window function to help me get the running total of the quantities, revenue and total customers which was partitioned by years.
 ```
 select *,  sum(Revenue)over( partition by year(order_date) order by order_date) as Running_Total_Revenue
@@ -72,7 +73,7 @@ where f.sales_amount is not null or f.product_key is not null or f.product_key!=
 group by p.product_line) as temp;
 
 ```
-#####  4.data segmentation
+#### 4.data segmentation
 - I categorized the data based on the costs to see which ones were popular. I segmented them into below 100, 100-500, 500-1000 and above 1000. I used a case statement to help create the different categories and a CTE to create a table with the different categories incorporated from which I would be able to derive the total orders based on the cost.
 ```
 with temp as (select f.product_key, p.product_name, p.cost,case
@@ -86,7 +87,7 @@ group by cost_range order by counts desc;
 
 ```
 
-#####  5.customer behaviour 
+#### 5.customer behaviour 
 - I analyzed the customer behaviour in terms of quantity of products bought, how many orders they've made, total sales amount, the average value per order and what category
   they fall into based on their total sales amount. I categorized the customers into regular, VIP and New using a case statement.
 ```
