@@ -1,4 +1,4 @@
-# Product-sales-SQL-analysis
+
 ## Project Over View
 The project aims to analyse the sales of sporting products, customer behaviour and product perfomance ranging from clothes, bikes, accessories etc. The analysis has been done using MySQL.
 ### Scope
